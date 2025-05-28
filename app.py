@@ -33,3 +33,6 @@ def chat_reply():
     session["chat"] = history
 
     return jsonify({"response": response.text})
+
+if __name__ == "__main__":
+    app.run(debug=True)

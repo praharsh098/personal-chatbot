@@ -1,25 +1,42 @@
-<script>
-    const chatBox = document.getElementById("chat-box");
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ bot_name }} Chatbot</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        #chat-box { background: white; padding: 10px; border-radius: 10px; height: 400px; overflow-y: scroll; margin-bottom: 10px; }
+        input[type=text] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>{{ bot_name }} Chatbot</h1>
+    <div id="chat-box"></div>
+    <input type="text" id="user-input" placeholder="Type a message..." autofocus>
 
-    async function sendMessage() {
-        const input = document.getElementById("user-input");
-        const message = input.value.trim();
-        if (!message) return;
+    <script>
+        const chatBox = document.getElementById("chat-box");
 
-        chatBox.innerHTML += `<p><b>You:</b> ${message}</p>`;
-        input.value = "";
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const message = input.value.trim();
+            if (!message) return;
 
-        const response = await fetch("/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message })
+            chatBox.innerHTML += `<p><b>You:</b> ${message}</p>`;
+            input.value = "";
+
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            chatBox.innerHTML += `<p><b>{{ bot_name }}:</b> ${data.response}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById("user-input").addEventListener("keydown", e => {
+            if (e.key === "Enter") sendMessage();
         });
-        const data = await response.json();
-        chatBox.innerHTML += `<p><b>{{ bot_name }}:</b> ${data.response}</p>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    document.getElementById("user-input").addEventListener("keydown", e => {
-        if (e.key === "Enter") sendMessage();
-    });
-</script>
+    </script>
+</body>
+</html>
