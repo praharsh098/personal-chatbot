@@ -17,3 +17,4 @@ AI Model: Google Gemini 1.5 Flash (google.generativeai)
 *Security Notes::
 Keep your API key safe. Never expose it in frontend code.
 Use .gitignore to prevent committing .env or secret keys.
+
