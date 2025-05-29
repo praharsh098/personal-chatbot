@@ -3,7 +3,7 @@ import google.generativeai as genai
 from chatbot_config import BOT_NAME, BOT_PERSONA
 from flask_session import Session
 
-genai.configure(api_key="AIzaSyA5f7dzLdtSLiDnog_J5tFFKuVo_Utw3kA")
+genai.configure(api_key="Your_api_key")
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
