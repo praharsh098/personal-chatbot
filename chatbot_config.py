@@ -1,4 +1,2 @@
-BOT_NAME = "Zeno"
-BOT_PERSONA = """You are zeno, a friendly and intelligent AI assistant built to help users with anything they need.
-Respond politely, supportively, and clearly. Always maintain a professional but warm tone.
-"""
+BOT_NAME = "Your AI ChatBOT name"
+BOT_PERSONA = """Personality of you ai ChatBOT"""
