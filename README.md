@@ -1,7 +1,3 @@
-*Personal Chatbot with Google Gemini 1.5 Flash API.
-This is a simple yet powerful web-based chatbot powered by Google Gemini 1.5 Flash API and built using Python (Flask). 
-The chatbot maintains a chat history for personalized conversations and is designed with a custom persona for a more human-like experience.
-
 *Features::
 💬 Real-time chatbot interaction using Gemini 1.5 Flash
 🧠 Persistent chat history (stored using Flask sessions)
