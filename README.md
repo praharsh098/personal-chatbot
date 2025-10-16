@@ -1,16 +1,45 @@
-*Features::
-💬 Real-time chatbot interaction using Gemini 1.5 Flash
-🧠 Persistent chat history (stored using Flask sessions)
-🎭 Customizable bot persona and name
-🌐 Deployed web interface (HTML + JavaScript)
-🔒 Secure API key handling (use .env or server-side config)
+## Chatbot (Flask + Google Generative AI)
 
-*Tech Stack::
-Backend: Python, Flask, Flask-Session
-Frontend: HTML, CSS, JavaScript
-AI Model: Google Gemini 1.5 Flash (google.generativeai)
+### Prerequisites
+- Python 3.10+
+- Google Generative AI API key
 
-*Security Notes::
-Keep your API key safe. Never expose it in frontend code.
-Use .gitignore to prevent committing .env or secret keys.
+### Setup
+1. Create and activate a virtual environment.
+2. Set environment variables.
+3. Install dependencies:
 
+```bash
+pip install -r requirements.txt
+```
+
+### Run locally
+Set environment variables (PowerShell example):
+
+```powershell
+$env:GEMINI_API_KEY="<your-key>"
+$env:SECRET_KEY="dev-secret"
+$env:GEMINI_MODEL="gemini-1.5-flash"
+$env:SESSION_TYPE="filesystem"
+$env:PORT=5000
+python app.py
+```
+
+Open `http://localhost:5000`.
+
+### Production
+- Exposes a `/health` endpoint.
+- Use `gunicorn` with the provided `Procfile`:
+
+```bash
+gunicorn --bind 0.0.0.0:${PORT:-8000} app:app
+```
+
+### Configuration
+- `GEMINI_API_KEY` (required)
+- `SECRET_KEY` (required in prod)
+- `GEMINI_MODEL` (optional, defaults to `gemini-1.5-flash`)
+- `SESSION_TYPE` (defaults `filesystem`)
+
+### Notes
+- Do not commit real secrets. Use environment variables in production.

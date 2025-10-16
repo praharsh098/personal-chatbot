@@ -1,16 +1,27 @@
 from flask import Flask, render_template, request, jsonify, session
+import os
 import google.generativeai as genai
 from chatbot_config import BOT_NAME, BOT_PERSONA
 from flask_session import Session
 
-genai.configure(api_key="Your_api_key")
+# Load configuration from environment
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+SESSION_TYPE = os.environ.get("SESSION_TYPE", "filesystem")
+
+if not GEMINI_API_KEY:
+    # Fail fast with a clear error for missing API key in production
+    raise RuntimeError("GEMINI_API_KEY environment variable is not set.")
+
+genai.configure(api_key=GEMINI_API_KEY)
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
-app.config["SESSION_TYPE"] = "filesystem"
+app.secret_key = SECRET_KEY
+app.config["SESSION_TYPE"] = SESSION_TYPE
 Session(app)
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel(MODEL_NAME)
 
 @app.route("/")
 def index():
@@ -24,15 +35,25 @@ def chat_reply():
 
     # Restore chat from session
     history = session.get("chat", [])
-    chat = model.start_chat(history=history)
-    response = chat.send_message(user_input)
+    try:
+        chat = model.start_chat(history=history)
+        response = chat.send_message(user_input)
+        text = response.text
+    except Exception as exc:
+        # Return a friendly error while not exposing internals
+        text = "Sorry, I couldn't process that request right now. Please try again."
 
     # Update history
     history.append({"role": "user", "parts": [user_input]})
-    history.append({"role": "model", "parts": [response.text]})
+    history.append({"role": "model", "parts": [text]})
     session["chat"] = history
 
-    return jsonify({"response": response.text})
+    return jsonify({"response": text})
+
+@app.get("/health")
+def health():
+    return jsonify({"status": "ok"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
