@@ -26,7 +26,7 @@ model = genai.GenerativeModel(MODEL_NAME)
 @app.route("/")
 def index():
     if "chat" not in session:
-        session["chat"] = [{"role": "user", "parts": [BOT_PERSONA]}]
+        session["chat"] = []
     return render_template("index.html", bot_name=BOT_NAME)
 
 @app.route("/chat", methods=["POST"])
@@ -36,10 +36,18 @@ def chat_reply():
     # Restore chat from session
     history = session.get("chat", [])
     try:
-        chat = model.start_chat(history=history)
+        # Add system instruction with persona
+        chat = model.start_chat(
+            history=history,
+            system_instruction=BOT_PERSONA
+        )
         response = chat.send_message(user_input)
         text = response.text
     except Exception as exc:
+        # Log the actual error for debugging
+        print(f"Error in chat: {str(exc)}")
+        import traceback
+        traceback.print_exc()
         # Return a friendly error while not exposing internals
         text = "Sorry, I couldn't process that request right now. Please try again."
 
