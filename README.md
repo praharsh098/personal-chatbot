@@ -71,7 +71,7 @@ A modern, production-ready chatbot built with Flask and Google's Generative AI (
 ```bash
 git add .
 git commit -m "Ready for deployment"
-git push origin main
+git push origin master
 ```
 
 ### Step 2: Create a Render Web Service
@@ -82,7 +82,7 @@ git push origin main
 4. Configure the service:
    - **Name**: `personal-chatbot` (or your preferred name)
    - **Region**: Choose closest to your users
-   - **Branch**: `main` (or your default branch)
+   - **Branch**: `master` (or your default branch)
    - **Root Directory**: Leave empty
    - **Runtime**: Python 3
    - **Build Command**: `pip install -r requirements.txt`

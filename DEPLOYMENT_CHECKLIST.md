@@ -31,7 +31,7 @@ Follow this checklist to ensure a smooth deployment to Render.com.
 ### 3. Commit Your Changes
 - [ ] Stage all changes: `git add .`
 - [ ] Commit: `git commit -m "Ready for deployment"`
-- [ ] Push to GitHub: `git push origin main`
+- [ ] Push to GitHub: `git push origin master`
 
 ## 🌐 Deploy to Render.com
 
@@ -42,7 +42,7 @@ Follow this checklist to ensure a smooth deployment to Render.com.
 ### Step 2: Create Web Service
 - [ ] Click "New +" → "Web Service"
 - [ ] Connect your repository
-- [ ] Select branch: `main` (or `master`)
+- [ ] Select branch: `master`
 
 ### Step 3: Configure Service
 - [ ] **Name**: `personal-chatbot` (or your choice)
@@ -97,7 +97,7 @@ Add these in Render dashboard:
 ## 🔄 Continuous Deployment
 
 ### Auto-Deploy Enabled
-- [ ] Render will auto-deploy on push to main branch
+- [ ] Render will auto-deploy on push to master branch
 - [ ] Test by making a small change and pushing
 - [ ] Verify new deployment appears in dashboard
 
