@@ -1,41 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ bot_name }} Chatbot</title>
-    <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
-        #chat-box { background: white; padding: 10px; border-radius: 10px; height: 400px; overflow-y: scroll; margin-bottom: 10px; }
-        input[type=text] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>{{ bot_name }} Chatbot</h1>
-    <div id="chat-box"></div>
-    <input type="text" id="user-input" placeholder="Type a message..." autofocus>
+    <div class="container">
+        <header>
+            <h1>💬 {{ bot_name }} Chatbot</h1>
+            <p class="subtitle">Your AI assistant is ready to help!</p>
+        </header>
+        
+        <div id="chat-box"></div>
+        
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message here..." autofocus>
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
 
     <script>
         const chatBox = document.getElementById("chat-box");
+        const input = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
 
         async function sendMessage() {
-            const input = document.getElementById("user-input");
             const message = input.value.trim();
             if (!message) return;
 
-            chatBox.innerHTML += `<p><b>You:</b> ${message}</p>`;
-            input.value = "";
+            // Disable input while processing
+            input.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.textContent = "Sending...";
 
-            const response = await fetch("/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message })
-            });
-            const data = await response.json();
-            chatBox.innerHTML += `<p><b>{{ bot_name }}:</b> ${data.response}</p>`;
+            // Add user message
+            const userMsg = document.createElement("div");
+            userMsg.className = "message user-message";
+            userMsg.innerHTML = `<div class="message-content">${escapeHtml(message)}</div>`;
+            chatBox.appendChild(userMsg);
+            input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Add bot response
+                const botMsg = document.createElement("div");
+                botMsg.className = "message bot-message";
+                botMsg.innerHTML = `<div class="message-content">${escapeHtml(data.response)}</div>`;
+                chatBox.appendChild(botMsg);
+            } catch (error) {
+                console.error("Error:", error);
+                const errorMsg = document.createElement("div");
+                errorMsg.className = "message error-message";
+                errorMsg.innerHTML = `<div class="message-content">Sorry, something went wrong. Please try again.</div>`;
+                chatBox.appendChild(errorMsg);
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.textContent = "Send";
+                input.focus();
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
         }
 
-        document.getElementById("user-input").addEventListener("keydown", e => {
-            if (e.key === "Enter") sendMessage();
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
     </script>
 </body>

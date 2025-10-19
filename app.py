@@ -2,13 +2,11 @@ from flask import Flask, render_template, request, jsonify, session
 import os
 import google.generativeai as genai
 from chatbot_config import BOT_NAME, BOT_PERSONA
-from flask_session import Session
 
 # Load configuration from environment
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
-SESSION_TYPE = os.environ.get("SESSION_TYPE", "filesystem")
 
 if not GEMINI_API_KEY:
     # Fail fast with a clear error for missing API key in production
@@ -18,8 +16,10 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-app.config["SESSION_TYPE"] = SESSION_TYPE
-Session(app)
+# Use Flask's built-in session (signed cookies) - production ready
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("SESSION_COOKIE_SECURE", "False").lower() == "true"
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 model = genai.GenerativeModel(MODEL_NAME)
 
